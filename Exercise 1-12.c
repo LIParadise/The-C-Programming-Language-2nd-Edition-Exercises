@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
                     // case B
                     if (buf[start] == '\0') {
                         // space all the way down
-                        // ignore it
+                        // ignore this part and refill buffer
                     } else {
                         // a word to print
                         // determine either the word ends in this buffer or not.
@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
                     }
                 }
             } else {
-                // first word span across buffers
+                // first word span across buffers, word start already printed
                 //
                 // Case A. line doesn't end in this buffer
                 // Case B. line ends in this buffer
