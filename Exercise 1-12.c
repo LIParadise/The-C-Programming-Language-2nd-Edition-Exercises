@@ -88,6 +88,7 @@ int main(int argc, char **argv) {
                     ;
                 if (newline == BUF_LEN) {
                     // Case A
+                    // notice Case A.a and Case A.b could be solved together
                     word_span_across_lines = buf[end] == '\0';
                     skip_remaining_parts = buf[end] != '\0';
                     buf[end] = '\0';
