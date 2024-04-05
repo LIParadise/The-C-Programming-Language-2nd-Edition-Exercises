@@ -19,7 +19,8 @@ int main(int argc, char **argv) {
     static const size_t BUF_LEN = 2;
     bool word_span_across_lines = false;
     bool skip_remaining_parts = false;
-    for (char buf[BUF_LEN]; fgets(buf, BUF_LEN, input) == buf;) {
+    char buf[BUF_LEN];
+    while (fgets(buf, BUF_LEN, input) == buf) {
         size_t start, end, newline;
         for (newline = 0; newline < BUF_LEN && buf[newline] != '\n'; ++newline)
             ;
