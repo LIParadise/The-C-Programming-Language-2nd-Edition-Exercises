@@ -19,7 +19,8 @@ int main(int argc, char **argv) {
     static const size_t BUF_LEN = 3;
     bool may_print = true;
     bool wrapped_word = false;
-    for (char buf[BUF_LEN]; fgets(buf, BUF_LEN, input) == buf;) {
+    char buf[BUF_LEN];
+    while (fgets(buf, BUF_LEN, input) == buf) {
         size_t start, end, newline;
         // '\n' is not space (man 3 isspace)
         // fgets always stores '\0' at the end (man 3 fgets)
