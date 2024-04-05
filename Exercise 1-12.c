@@ -22,7 +22,6 @@ int main(int argc, char **argv) {
     char buf[BUF_LEN];
     while (fgets(buf, BUF_LEN, input) == buf) {
         size_t start, end, newline;
-        // '\n' is not space (man 3 isspace)
         // fgets always stores '\0' at the end (man 3 fgets)
         for (newline = 0; buf[newline] != '\0' && buf[newline] != '\n';
              ++newline) {
