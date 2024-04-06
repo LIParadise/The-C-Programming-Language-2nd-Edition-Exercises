@@ -2,6 +2,9 @@
 
 #include <string.h>
 
+#define FIELD_SIZEOF(t, f)              (sizeof(((t *)0)->f))
+#define FIELD_PTR_POINT_TO_SIZEOF(t, f) (sizeof(*((t *)0)->f))
+
 static const size_t MIN_CAP = 32;
 
 static vec with_capacity(const size_t s) {
@@ -9,7 +12,7 @@ static vec with_capacity(const size_t s) {
     vec ret = {
         .cap = cap,
         .len = 0,
-        .arr = (unsigned *)malloc(sizeof(unsigned) * cap),
+        .arr = malloc(FIELD_PTR_POINT_TO_SIZEOF(vec, arr) * cap),
     };
     return ret;
 }
@@ -86,7 +89,7 @@ static option pop_front(vec *v) { return erase(v, 0); }
 static vec clone(const vec *v) {
     vec ret = {.cap = v->cap,
                .len = v->len,
-               .arr = (unsigned *)malloc(sizeof(unsigned) * v->cap)};
+               .arr = malloc(FIELD_PTR_POINT_TO_SIZEOF(vec, arr) * v->cap)};
     memcpy(ret.arr, v->arr, sizeof(unsigned) * len(v));
     return ret;
 }
