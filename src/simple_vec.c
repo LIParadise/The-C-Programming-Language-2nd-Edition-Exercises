@@ -30,14 +30,14 @@ static size_t len(const vec *v) { return v->len; }
 
 static bool empty(const vec *v) { return len(v) == 0; }
 
-static option get(const vec *v, const size_t idx) {
+static option_unsigned get(const vec *v, const size_t idx) {
     bool ok = idx < len(v);
-    option ret = {.ok = ok, .u = ok ? v->arr[idx] : 0};
+    option_unsigned ret = {.ok = ok, .u = ok ? v->arr[idx] : 0};
     return ret;
 }
 
-static option replace(vec *v, const size_t idx, const unsigned u) {
-    option ret = get(v, idx);
+static option_unsigned replace(vec *v, const size_t idx, const unsigned u) {
+    option_unsigned ret = get(v, idx);
     if (ret.ok) {
         v->arr[idx] = u;
     }
@@ -65,8 +65,8 @@ static bool insert(vec *v, const size_t idx, const unsigned u) {
     }
 }
 
-static option erase(vec *v, const size_t idx) {
-    option ret = get(v, idx);
+static option_unsigned erase(vec *v, const size_t idx) {
+    option_unsigned ret = get(v, idx);
     if (ret.ok) {
         for (size_t j = idx + 1; j < len(v); ++j) {
             v->arr[j - 1] = v->arr[j];
@@ -80,11 +80,12 @@ static void push_back(vec *v, const unsigned u) { insert(v, len(v), u); }
 
 static void push_front(vec *v, const unsigned u) { insert(v, 0, u); }
 
-static option pop_back(vec *v) {
-    return empty(v) ? (option){.ok = false, .u = 0} : erase(v, v->len - 1);
+static option_unsigned pop_back(vec *v) {
+    return empty(v) ? (option_unsigned){.ok = false, .u = 0}
+                    : erase(v, v->len - 1);
 }
 
-static option pop_front(vec *v) { return erase(v, 0); }
+static option_unsigned pop_front(vec *v) { return erase(v, 0); }
 
 static vec clone(const vec *v) {
     vec ret = {.cap = v->cap,
@@ -94,18 +95,29 @@ static vec clone(const vec *v) {
     return ret;
 }
 
-const access_vec av = {
-    .with_capacity = with_capacity,
-    .dtor = dtor,
-    .len = len,
-    .empty = empty,
-    .get = get,
-    .replace = replace,
-    .insert = insert,
-    .erase = erase,
-    .push_back = push_back,
-    .push_front = push_front,
-    .pop_back = pop_back,
-    .pop_front = pop_front,
-    .clone = clone,
-};
+static option_size_t find(const vec *v, const unsigned u) {
+    option_size_t ret = {.ok = false, .s = 0};
+    for (size_t i = 0; i < len(v); ++i) {
+        if (get(v, i).ok && get(v, i).u == u) {
+            ret.ok = true;
+            ret.s = i;
+            break;
+        }
+    }
+    return ret;
+}
+
+const access_vec av = {.with_capacity = with_capacity,
+                       .dtor = dtor,
+                       .len = len,
+                       .empty = empty,
+                       .get = get,
+                       .replace = replace,
+                       .insert = insert,
+                       .erase = erase,
+                       .push_back = push_back,
+                       .push_front = push_front,
+                       .pop_back = pop_back,
+                       .pop_front = pop_front,
+                       .clone = clone,
+                       .find = find};
