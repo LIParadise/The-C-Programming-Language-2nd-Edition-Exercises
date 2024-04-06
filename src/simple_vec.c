@@ -1,5 +1,7 @@
 #include "../lib/simple_vec.h"
 
+#include <string.h>
+
 static const size_t MIN_CAP = 32;
 
 static vec with_capacity(const size_t s) {
@@ -23,7 +25,7 @@ static void dtor(vec *v) {
 
 static size_t len(const vec *v) { return v->len; }
 
-static bool empty(const vec *v) { return len(v) > 0; }
+static bool empty(const vec *v) { return len(v) == 0; }
 
 static option get(const vec *v, const size_t idx) {
     bool ok = idx < len(v);
@@ -60,22 +62,32 @@ static bool insert(vec *v, const size_t idx, const unsigned u) {
     }
 }
 
+static option erase(vec *v, const size_t idx) {
+    option ret = get(v, idx);
+    if (ret.ok) {
+        for (size_t j = idx + 1; j < len(v); ++j) {
+            v->arr[j - 1] = v->arr[j];
+        }
+        v->len--;
+    }
+    return ret;
+}
+
 static void push_back(vec *v, const unsigned u) { insert(v, len(v), u); }
 
 static void push_front(vec *v, const unsigned u) { insert(v, 0, u); }
 
 static option pop_back(vec *v) {
-    option ret = empty(v) ? (option){.ok = false, .u = 0} : get(v, len(v) - 1);
-    v->len--;
-    return ret;
+    return empty(v) ? (option){.ok = false, .u = 0} : erase(v, v->len - 1);
 }
 
-static option pop_front(vec *v) {
-    option ret = get(v, 0);
-    for (size_t i = len(v) - 1; i > 0; --i) {
-        v->arr[i - 1] = v->arr[i];
-    }
-    v->len--;
+static option pop_front(vec *v) { return erase(v, 0); }
+
+static vec clone(const vec *v) {
+    vec ret = {.cap = v->cap,
+               .len = v->len,
+               .arr = (unsigned *)malloc(sizeof(unsigned) * v->cap)};
+    memcpy(ret.arr, v->arr, sizeof(unsigned) * len(v));
     return ret;
 }
 
@@ -87,8 +99,10 @@ const access_vec av = {
     .get = get,
     .replace = replace,
     .insert = insert,
+    .erase = erase,
     .push_back = push_back,
     .push_front = push_front,
     .pop_back = pop_back,
     .pop_front = pop_front,
+    .clone = clone,
 };

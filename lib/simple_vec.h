@@ -23,10 +23,12 @@ typedef struct access_vec {
         option (*get)(const vec *, const size_t);
         option (*replace)(vec *, const size_t, const unsigned);
         bool (*insert)(vec *, const size_t, const unsigned);
+        option (*erase)(vec *, const size_t);
         void (*push_back)(vec *, const unsigned);
         void (*push_front)(vec *, const unsigned);
         option (*pop_back)(vec *);
         option (*pop_front)(vec *);
+        vec (*clone)(const vec*);
 } access_vec;
 
 extern const access_vec av;
