@@ -35,6 +35,7 @@ typedef struct access_vec {
         option_unsigned (*pop_front)(vec *);
         vec (*clone)(const vec *);
         option_size_t (*find)(const vec*, const unsigned);
+        size_t (*partition_point)(const vec*, const unsigned);
 } access_vec;
 
 extern const access_vec av;

@@ -47,7 +47,7 @@ static option_unsigned replace(vec *v, const size_t idx, const unsigned u) {
 static void double_cap_if_required(vec *v) {
     if (len(v) == v->cap) {
         v->cap *= 2;
-        v->arr = realloc(v->arr, v->cap);
+        v->arr = realloc(v->arr, FIELD_PTR_POINT_TO_SIZEOF(vec, arr) * v->cap);
     }
 }
 
@@ -89,9 +89,9 @@ static option_unsigned pop_front(vec *v) { return erase(v, 0); }
 
 static vec clone(const vec *v) {
     vec ret = {.cap = v->cap,
-               .len = v->len,
+               .len = len(v),
                .arr = malloc(FIELD_PTR_POINT_TO_SIZEOF(vec, arr) * v->cap)};
-    memcpy(ret.arr, v->arr, sizeof(unsigned) * len(v));
+    memcpy(ret.arr, v->arr, FIELD_PTR_POINT_TO_SIZEOF(vec, arr) * len(v));
     return ret;
 }
 
@@ -107,6 +107,48 @@ static option_size_t find(const vec *v, const unsigned u) {
     return ret;
 }
 
+// [Rust](https://doc.rust-lang.org/std/primitive.slice.html#method.partition_point)
+//
+// Input criteria: "partitioned according to the given predicate"
+// here it means sorted in non-decreasing order
+//
+// Output: the index into which insert the element the array remains sorted
+static size_t partition_point(const vec *v, const unsigned u) {
+    // loop invariant:
+    // array at left is less than u
+    // array at right is no less than u
+    // both always within boundary
+    if (empty(v)) {
+        return 0;
+    } else {
+        size_t left = 0, right = len(v) - 1;
+        {
+            // loop invariant may not hold at first;
+            // exclude them
+            if (get(v, left).u >= u) {
+                return left;
+            } else if (get(v, right).u < u) {
+                return len(v);
+            }
+        }
+        do {
+            // loop invariant holds
+            size_t mid = (left + right) / 2;
+            if (mid == left) {
+                // left and right differ by only 1
+                break;
+            } else {
+                if (get(v, mid).u < u) {
+                    left = mid;
+                } else {
+                    right = mid;
+                }
+            }
+        } while (right > left);
+        return right;
+    }
+}
+
 const access_vec av = {.with_capacity = with_capacity,
                        .dtor = dtor,
                        .len = len,
@@ -120,4 +162,5 @@ const access_vec av = {.with_capacity = with_capacity,
                        .pop_back = pop_back,
                        .pop_front = pop_front,
                        .clone = clone,
-                       .find = find};
+                       .find = find,
+                       .partition_point = partition_point};
