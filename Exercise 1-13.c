@@ -12,7 +12,7 @@ void print_help_and_exit(void) {
 
 void counter_add_1(unsigned u, vec *len_of_words, vec *freq_of_words) {
     const size_t idx = av.partition_point(len_of_words, u);
-    option_unsigned old_cnt = av.get(len_of_words, idx);
+    opt_u old_cnt = av.get(len_of_words, idx);
     if (old_cnt.ok && old_cnt.u == u) {
         old_cnt = av.get(freq_of_words, idx);
         av.replace(freq_of_words, idx, old_cnt.u + 1);
