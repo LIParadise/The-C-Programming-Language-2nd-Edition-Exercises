@@ -29,6 +29,45 @@ void easy_print(vec *len_of_words, vec *freq_of_words) {
     }
 }
 
+void print(vec *len_of_words, vec *freq_of_words) {
+    vec widths_of_len = av.with_capacity(av.len(len_of_words));
+    const size_t column_cnt = av.len(len_of_words);
+    unsigned thres = 0;
+    for (size_t i = 0; i < column_cnt; ++i) {
+        av.push_back(&widths_of_len,
+                     snprintf(0, 0, "%u", av.get(len_of_words, i).u));
+        const unsigned h = av.get(freq_of_words, i).u;
+        thres = h > thres ? h : thres;
+    }
+    while (thres > 0) {
+        for (size_t i = 0; i < column_cnt; ++i) {
+            unsigned w = av.get(&widths_of_len, i).u;
+            for (unsigned j = 0; j < w; ++j) {
+                putchar(' ');
+            }
+            putchar(av.get(freq_of_words, i).u >= thres ? '*' : ' ');
+            putchar(' ');
+            putchar(' ');
+        }
+        putchar('\n');
+        thres--;
+    }
+
+    for (size_t i = 0; i < column_cnt; ++i) {
+        for (unsigned j = 0; j < av.get(&widths_of_len, i).u + 2; ++j) {
+            putchar('=');
+        }
+        putchar(i + 1 == column_cnt ? '\n' : '=');
+    }
+
+    for (size_t i = 0; i < column_cnt; ++i) {
+        printf(" %d ", av.get(len_of_words, i).u);
+        putchar(i + 1 == column_cnt ? '\n' : '|');
+    }
+
+    av.dtor(&widths_of_len);
+}
+
 // Read from first argument,
 // create histogram where x axis is word length
 // y axis is count of words of that length
@@ -83,6 +122,7 @@ int main(int argc, char **argv) {
     }
 
     easy_print(&len_of_words, &freq_of_words);
+    print(&len_of_words, &freq_of_words);
 
     av.dtor(&len_of_words);
     av.dtor(&freq_of_words);
