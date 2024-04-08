@@ -38,7 +38,7 @@ void test_push_back(void) {
         destroy_and_exit(&v);
     }
 
-    option_unsigned opt;
+    opt_u opt;
     unsigned ans[] = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5,
                       8, 9, 7, 9, 3, 2, 3, 8, 4, 6};
     for (size_t i = 0; i < sizeof(ans) / sizeof(*ans); ++i) {
@@ -95,7 +95,7 @@ void test_push_front(void) {
         destroy_and_exit(&v);
     }
 
-    option_unsigned opt;
+    opt_u opt;
     unsigned ans[] = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5,
                       8, 9, 7, 9, 3, 2, 3, 8, 4, 6};
     for (size_t i = 0; i < sizeof(ans) / sizeof(*ans); ++i) {
@@ -147,7 +147,7 @@ void test_insert_erase(void) {
     av.insert(&v, 0, 1);
     assert(av.len(&v) == 10);
     for (unsigned i = 1; i <= 10; ++i) {
-        option_unsigned opt = av.get(&v, i - 1);
+        opt_u opt = av.get(&v, i - 1);
         assert(opt.ok && i == opt.u);
     }
     while (av.pop_front(&v).ok)
@@ -179,7 +179,7 @@ void test_insert_erase(void) {
     assert(av.len(&v) == 10);
     vec u = av.clone(&v);
     for (unsigned i = 1; i <= 10; ++i) {
-        option_size_t opt = av.find(&u, i + 10);
+        opt_s opt = av.find(&u, i + 10);
         assert(opt.ok && i - 1 == opt.s);
     }
     while (av.pop_front(&u).ok)
@@ -273,7 +273,7 @@ void test_partition_point(void) {
                       13, 14, 19, 20, 20, 37, 37, 42, 42, 42, 69};
     vec u = av.clone(&v);
     for (size_t i = 0; i < sizeof(ans) / sizeof(*ans); ++i) {
-        option_unsigned opt = av.pop_front(&u);
+        opt_u opt = av.pop_front(&u);
         assert(opt.ok && opt.u == ans[i]);
     }
 
