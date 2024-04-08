@@ -30,14 +30,14 @@ static size_t len(const vec *v) { return v->len; }
 
 static bool empty(const vec *v) { return len(v) == 0; }
 
-static option_unsigned get(const vec *v, const size_t idx) {
+static opt_u get(const vec *v, const size_t idx) {
     bool ok = idx < len(v);
-    option_unsigned ret = {.ok = ok, .u = ok ? v->arr[idx] : 0};
+    opt_u ret = {.ok = ok, .u = ok ? v->arr[idx] : 0};
     return ret;
 }
 
-static option_unsigned replace(vec *v, const size_t idx, const unsigned u) {
-    option_unsigned ret = get(v, idx);
+static opt_u replace(vec *v, const size_t idx, const unsigned u) {
+    opt_u ret = get(v, idx);
     if (ret.ok) {
         v->arr[idx] = u;
     }
@@ -65,8 +65,8 @@ static bool insert(vec *v, const size_t idx, const unsigned u) {
     }
 }
 
-static option_unsigned erase(vec *v, const size_t idx) {
-    option_unsigned ret = get(v, idx);
+static opt_u erase(vec *v, const size_t idx) {
+    opt_u ret = get(v, idx);
     if (ret.ok) {
         for (size_t j = idx + 1; j < len(v); ++j) {
             v->arr[j - 1] = v->arr[j];
@@ -80,12 +80,12 @@ static void push_back(vec *v, const unsigned u) { insert(v, len(v), u); }
 
 static void push_front(vec *v, const unsigned u) { insert(v, 0, u); }
 
-static option_unsigned pop_back(vec *v) {
-    return empty(v) ? (option_unsigned){.ok = false, .u = 0}
+static opt_u pop_back(vec *v) {
+    return empty(v) ? (opt_u){.ok = false, .u = 0}
                     : erase(v, v->len - 1);
 }
 
-static option_unsigned pop_front(vec *v) { return erase(v, 0); }
+static opt_u pop_front(vec *v) { return erase(v, 0); }
 
 static vec clone(const vec *v) {
     vec ret = {.cap = v->cap,
@@ -95,8 +95,8 @@ static vec clone(const vec *v) {
     return ret;
 }
 
-static option_size_t find(const vec *v, const unsigned u) {
-    option_size_t ret = {.ok = false, .s = 0};
+static opt_s find(const vec *v, const unsigned u) {
+    opt_s ret = {.ok = false, .s = 0};
     for (size_t i = 0; i < len(v); ++i) {
         if (get(v, i).ok && get(v, i).u == u) {
             ret.ok = true;
